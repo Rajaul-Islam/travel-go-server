@@ -1,6 +1,6 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
-const ObjectId=require('mongodb').ObjectId;
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 const cors = require('cors');
 
@@ -58,27 +58,48 @@ async function run() {
             res.send(elements);
         })
 
-//get single api
-        app.get('/users/:id',async(req,res)=>{
-            const id=req.params.id;
-            const query={_id:ObjectId(id)};
-            const user=await userCollection.findOne(query)
+        //get single api
+        app.get('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const user = await userCollection.findOne(query)
             res.send(user);
         })
 
 
         //delete single api
-        app.delete('/users/:id',async(req,res)=>{
+        app.delete('/users/:id', async (req, res) => {
 
 
-            const id=req.params.id;
-            const query={_id:ObjectId(id)};
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
             const result = await userCollection.deleteOne(query);
-            console.log('deleting user with id',result);
+            console.log('deleting user with id', result);
             res.json(result)
         })
 
+//
+            //update state 
+            app.put('/users/:id',async(req,res)=>{
+                const id=req.params.id;
+                console.log(id)
+               
+                const filter={_id:ObjectId(id)};
+                const options = { upsert: true }; 
+                const updateDoc = {
+                    $set: {
+                        orderStatus:"confirm"
+                    },
+                  };
+                  const result = await userCollection.updateOne(filter,updateDoc,options)
+                console.log('updating user ',updateDoc);
+                res.json(result)
+            })
+        
 
+
+
+//
         // const result = await usersCollection.insertOne(newUser)
         console.log('connected to database');
     }
